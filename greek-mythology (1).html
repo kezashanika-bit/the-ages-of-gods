@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Age of Gods — Greek Mythology</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f0d060;
+      --gold-dim: #8a6e1a;
+      --marble: #f2f2f2;
+      --marble-dim: #b8b0a0;
+      --bg: #0a0a0a;
+      --bg-mid: #111108;
+      --bg-card: #13120e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--marble);
+      font-family: 'EB Garamond', serif;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .font-display { font-family: 'Cinzel Decorative', serif; }
+    .font-heading  { font-family: 'Cinzel', serif; }
+    .font-body     { font-family: 'EB Garamond', serif; }
+
+    /* ── GOLD TEXT ── */
+    .text-gold { color: var(--gold); }
+    .text-gold-light { color: var(--gold-light); }
+
+    /* ── NAVBAR ── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      transition: all 0.4s ease;
+      padding: 1.25rem 2rem;
+    }
+    #navbar.scrolled {
+      background: rgba(10, 10, 8, 0.72);
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+      padding: 0.75rem 2rem;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.6);
+    }
+    .nav-link {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--marble-dim);
+      transition: color 0.3s;
+    }
+    .nav-link:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(212,175,55,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(100,80,20,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 20% 70%, rgba(50,40,10,0.06) 0%, transparent 60%),
+        linear-gradient(to bottom, #050503 0%, #0a0a06 40%, #0d0c07 100%);
+    }
+
+    /* Animated Greek pillars / columns (CSS art) */
+    .column-left, .column-right {
+      position: absolute;
+      bottom: 0;
+      width: 70px;
+      opacity: 0.12;
+    }
+    .column-left { left: 8%; }
+    .column-right { right: 8%; }
+
+    /* Stars */
+    .stars {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--gold-light);
+      border-radius: 50%;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite;
+      opacity: var(--op, 0.4);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--op, 0.4); transform: scale(1); }
+      50% { opacity: calc(var(--op, 0.4) * 0.2); transform: scale(0.6); }
+    }
+
+    /* Hero title entrance */
+    .hero-title { animation: heroIn 1.4s cubic-bezier(0.16,1,0.3,1) both; }
+    .hero-sub   { animation: heroIn 1.4s 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+    .hero-cta   { animation: heroIn 1.4s 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .gold-divider {
+      width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+    }
+
+    /* CTA Button */
+    .btn-gold {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(212,175,55,0.5);
+      padding: 0.9rem 2.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-gold::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+      z-index: -1;
+    }
+    .btn-gold:hover { color: #0a0a0a; border-color: var(--gold); }
+    .btn-gold:hover::before { transform: scaleX(1); }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.5rem, 4vw, 2.8rem);
+      color: var(--marble);
+      letter-spacing: 0.05em;
+    }
+    .section-subtitle {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      color: var(--marble-dim);
+      font-size: 1.1rem;
+    }
+
+    /* Ornamental rule */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+      margin: 0.75rem 0;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      flex: 1;
+      max-width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim));
+    }
+    .ornament::after { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+    .ornament-diamond {
+      width: 6px; height: 6px;
+      background: var(--gold);
+      transform: rotate(45deg);
+    }
+
+    /* ── PANTHEON CARDS ── */
+    .god-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(212,175,55,0.12);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, border-color 0.4s ease;
+      cursor: default;
+    }
+    .god-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .god-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.35), 0 0 40px rgba(212,175,55,0.06);
+      border-color: rgba(212,175,55,0.4);
+    }
+    .god-card:hover::before { opacity: 1; }
+
+    .god-image-area {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .god-image-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1608 0%, #0d0c07 100%);
+    }
+    .god-symbol {
+      font-size: 4rem;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 20px rgba(212,175,55,0.4));
+      transition: transform 0.4s ease, filter 0.4s ease;
+    }
+    .god-card:hover .god-symbol {
+      transform: scale(1.15) translateY(-4px);
+      filter: drop-shadow(0 0 30px rgba(212,175,55,0.7));
+    }
+    .god-symbol-border {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 70%);
+    }
+
+    .god-domain-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 1px solid rgba(212,175,55,0.2);
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+    }
+
+    /* Hover shimmer line */
+    .god-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent);
+      transition: left 0.6s ease;
+    }
+    .god-card:hover::after { left: 150%; }
+
+    /* ── MYTH TABS ── */
+    .tab-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--marble-dim);
+      padding: 0.7rem 1.4rem;
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: transparent;
+      border-top: none; border-left: none; border-right: none;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--gold); }
+    .tab-btn.active {
+      color: var(--gold);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeUp 0.5s ease both;
+    }
+    .tab-content.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .myth-card {
+      background: linear-gradient(135deg, #13120e 0%, #0e0d09 100%);
+      border: 1px solid rgba(212,175,55,0.1);
+      padding: 2.5rem;
+      position: relative;
+    }
+    .myth-card::before {
+      content: '"';
+      position: absolute;
+      top: 1rem; left: 1.5rem;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 6rem;
+      color: rgba(212,175,55,0.06);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .myth-num {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #070705;
+      border-top: 1px solid rgba(212,175,55,0.1);
+    }
+    .footer-link {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--marble-dim);
+      transition: color 0.3s;
+      text-decoration: none;
+    }
+    .footer-link:hover { color: var(--gold); }
+
+    /* ── SCROLL ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu {
+      display: none;
+      background: rgba(7,7,5,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+    }
+    #mobile-menu.open { display: block; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0a0a08; }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+    /* Selection */
+    ::selection { background: rgba(212,175,55,0.25); color: var(--marble); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#hero" class="font-display text-xs tracking-widest text-gold uppercase flex items-center gap-2">
+      <span style="font-size:1.2rem;">⚡</span>
+      <span class="hidden sm:inline">Olympus</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#pantheon" class="nav-link">The Pantheon</a>
+      <a href="#myths" class="nav-link">Sacred Myths</a>
+      <a href="#footer" class="nav-link">The Underworld</a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button id="menu-toggle" class="md:hidden text-gold" onclick="toggleMenu()">
+      <i data-lucide="menu" style="width:20px;height:20px;"></i>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden mt-4 pb-4 px-4 space-y-3">
+    <a href="#pantheon" class="block nav-link py-2" onclick="closeMenu()">The Pantheon</a>
+    <a href="#myths" class="block nav-link py-2" onclick="closeMenu()">Sacred Myths</a>
+    <a href="#footer" class="block nav-link py-2" onclick="closeMenu()">The Underworld</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section id="hero" class="relative">
+  <div class="hero-bg"></div>
+
+  <!-- Stars -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Decorative columns -->
+  <div class="column-left hidden lg:block">
+    <svg viewBox="0 0 70 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="0" width="50" height="30" fill="#d4af37"/>
+      <rect x="18" y="30" width="34" height="420" fill="#d4af37"/>
+      <rect x="5" y="450" width="60" height="15" fill="#d4af37"/>
+      <rect x="0" y="465" width="70" height="20" fill="#d4af37"/>
+      <!-- Flutes -->
+      <line x1="26" y1="30" x2="26" y2="450" stroke="#0a0a08" stroke-width="2"/>
+      <line x1="34" y1="30" x2="34" y2="450" stroke="#0a0a08" stroke-width="2"/>
+      <line x1="42" y1="30" x2="42" y2="450" stroke="#0a0a08" stroke-width="2"/>
+    </svg>
+  </div>
+  <div class="column-right hidden lg:block">
+    <svg viewBox="0 0 70 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="0" width="50" height="30" fill="#d4af37"/>
+      <rect x="18" y="30" width="34" height="420" fill="#d4af37"/>
+      <rect x="5" y="450" width="60" height="15" fill="#d4af37"/>
+      <rect x="0" y="465" width="70" height="20" fill="#d4af37"/>
+      <line x1="26" y1="30" x2="26" y2="450" stroke="#0a0a08" stroke-width="2"/>
+      <line x1="34" y1="30" x2="34" y2="450" stroke="#0a0a08" stroke-width="2"/>
+      <line x1="42" y1="30" x2="42" y2="450" stroke="#0a0a08" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <!-- Hero content -->
+  <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+    <p class="hero-sub font-heading text-xs tracking-widest uppercase mb-6" style="color:var(--gold-dim); letter-spacing:0.4em;">
+      — In Nomine Deorum —
+    </p>
+
+    <h1 class="hero-title font-display mb-6 leading-tight" style="font-size:clamp(2.8rem,9vw,7rem); color:var(--marble); text-shadow:0 0 80px rgba(212,175,55,0.15);">
+      The Age<br/>
+      <span style="color:var(--gold); text-shadow:0 0 40px rgba(212,175,55,0.3);">of Gods</span>
+    </h1>
+
+    <div class="gold-divider mb-6"></div>
+
+    <p class="hero-sub font-body text-lg md:text-xl mb-10 leading-relaxed" style="color:var(--marble-dim); max-width:560px; margin-left:auto; margin-right:auto; font-style:italic;">
+      When the heavens were young and the earth trembled beneath immortal footsteps — enter the sacred realm of Olympus.
+    </p>
+
+    <div class="hero-cta flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="#pantheon" class="btn-gold">Enter Olympus</a>
+      <a href="#myths" class="btn-gold" style="border-color:rgba(212,175,55,0.25);">Read the Myths</a>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.55rem; color:var(--gold);">Scroll</span>
+      <div style="width:1px; height:40px; background:linear-gradient(to bottom, var(--gold), transparent);"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     PANTHEON
+════════════════════════════════════════ -->
+<section id="pantheon" class="py-24 px-6 relative">
+  <!-- Subtle top gradient -->
+  <div class="absolute top-0 left-0 right-0 h-32" style="background:linear-gradient(to bottom, #0a0a06, transparent);"></div>
+
+  <div class="max-w-7xl mx-auto relative">
+
+    <!-- Section header -->
+    <div class="text-center mb-16 reveal">
+      <p class="font-heading text-xs tracking-widest uppercase mb-3" style="color:var(--gold-dim); letter-spacing:0.4em;">The Twelve Olympians</p>
+      <h2 class="section-title mb-3">The Pantheon</h2>
+      <div class="ornament"><div class="ornament-diamond"></div></div>
+      <p class="section-subtitle mt-3 max-w-xl mx-auto">Lords and ladies of Olympus, rulers of the cosmos — each sovereign over their sacred domain.</p>
+    </div>
+
+    <!-- Gods grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Zeus -->
+      <div class="god-card reveal reveal-delay-1">
+        <div class="god-image-area">
+          <div class="god-image-bg"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">⚡</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Zeus</h3>
+              <p class="god-domain-tag mt-1">King of the Gods</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">I</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            Supreme ruler of Olympus, god of sky, thunder, and justice. Wielder of the divine thunderbolt, Zeus governs the heavens and holds dominion over gods and mortals alike, enforcing the sacred laws of hospitality.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="zap" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Eagle · Thunderbolt · Oak</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poseidon -->
+      <div class="god-card reveal reveal-delay-2">
+        <div class="god-image-area">
+          <div class="god-image-bg" style="background:linear-gradient(135deg, #0a1420 0%, #07100d 100%);"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">🔱</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Poseidon</h3>
+              <p class="god-domain-tag mt-1">God of the Sea</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">II</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            Lord of the deep, earth-shaker, tamer of horses. Poseidon rules the oceans and their depths, commanding storms and earthquakes with his fearsome trident, brother to Zeus and rival to Athena for Athens.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="waves" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Trident · Horse · Dolphin</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hades -->
+      <div class="god-card reveal reveal-delay-3">
+        <div class="god-image-area">
+          <div class="god-image-bg" style="background:linear-gradient(135deg, #100810 0%, #07060a 100%);"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">💀</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Hades</h3>
+              <p class="god-domain-tag mt-1">God of the Underworld</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">III</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            Silent king of the dead, guardian of all souls who pass beyond the mortal veil. Neither evil nor cruel, Hades rules the realm below with impartiality — he who receives all equally in the end.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="skull" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Helm · Cerberus · Cypress</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Athena -->
+      <div class="god-card reveal reveal-delay-1">
+        <div class="god-image-area">
+          <div class="god-image-bg" style="background:linear-gradient(135deg, #0e1410 0%, #090e0a 100%);"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">🦉</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Athena</h3>
+              <p class="god-domain-tag mt-1">Goddess of Wisdom</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">IV</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            Sprung fully armored from the forehead of Zeus, goddess of wisdom, warfare strategy, and crafts. Patron of Athens and protectress of heroes, Athena favors intellect and cunning over brute force.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="book-open" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Owl · Aegis · Olive Tree</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ares -->
+      <div class="god-card reveal reveal-delay-2">
+        <div class="god-image-area">
+          <div class="god-image-bg" style="background:linear-gradient(135deg, #180808 0%, #0d0505 100%);"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">⚔️</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Ares</h3>
+              <p class="god-domain-tag mt-1">God of War</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">V</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            The fearsome god of war and bloodlust, embodying the brutal and violent aspects of battle. Unlike Athena's strategic warfare, Ares revels in carnage itself — unpredictable, passionate, and terrible in his fury.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="swords" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Spear · Shield · Vulture</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aphrodite -->
+      <div class="god-card reveal reveal-delay-3">
+        <div class="god-image-area">
+          <div class="god-image-bg" style="background:linear-gradient(135deg, #180f10 0%, #0d080a 100%);"></div>
+          <div class="god-symbol-border"></div>
+          <div class="god-symbol">🌹</div>
+        </div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg" style="color:var(--marble);">Aphrodite</h3>
+              <p class="god-domain-tag mt-1">Goddess of Love</p>
+            </div>
+            <span class="text-2xl" style="color:var(--gold-dim);">VI</span>
+          </div>
+          <p class="font-body leading-relaxed text-sm" style="color:var(--marble-dim);">
+            Born from the sea-foam, goddess of love, beauty, desire, and pleasure. Her power transcends all others — even the mightiest gods bow to Eros's golden arrows at her command. The face that launched a thousand ships.
+          </p>
+          <div class="mt-4 flex items-center gap-2" style="color:var(--gold-dim);">
+            <i data-lucide="heart" style="width:14px;height:14px;"></i>
+            <span class="font-heading text-xs tracking-widest uppercase" style="font-size:0.58rem;">Symbols: Dove · Rose · Myrtle</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     MYTHS TAB SECTION
+════════════════════════════════════════ -->
+<section id="myths" class="py-24 px-6 relative" style="background:linear-gradient(to bottom, #0a0a06 0%, #08080402 100%);">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Section header -->
+    <div class="text-center mb-14 reveal">
+      <p class="font-heading text-xs tracking-widest uppercase mb-3" style="color:var(--gold-dim); letter-spacing:0.4em;">Chronicles of Olympus</p>
+      <h2 class="section-title mb-3">Sacred Myths</h2>
+      <div class="ornament"><div class="ornament-diamond"></div></div>
+      <p class="section-subtitle mt-3 max-w-xl mx-auto">Tales woven at the dawn of time — passed from poet to priest, from Muse to mortal.</p>
+    </div>
+
+    <!-- Tab container -->
+    <div class="reveal">
+      <!-- Tab buttons -->
+      <div class="flex overflow-x-auto gap-0 mb-10" style="border-bottom:1px solid rgba(212,175,55,0.15);">
+        <button class="tab-btn active" onclick="switchTab('creation', this)">The Creation</button>
+        <button class="tab-btn" onclick="switchTab('titanomachy', this)">Titanomachy</button>
+        <button class="tab-btn" onclick="switchTab('odyssey', this)">The Odyssey</button>
+        <button class="tab-btn" onclick="switchTab('prometheus', this)">Prometheus</button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div id="tab-creation" class="tab-content active">
+        <div class="myth-card">
+          <p class="myth-num mb-4">Chronicle I · In the Beginning</p>
+          <h3 class="font-display text-2xl md:text-3xl mb-5" style="color:var(--gold);">The Creation of All Things</h3>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Before all things existed, there was only <em>Chaos</em> — a dark, formless void of infinite potential. From this primordial emptiness emerged Gaia, the Earth, Tartarus, the deep abyss, and Eros, the force of love that would bind creation together.
+          </p>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Gaia brought forth Uranus, the starry heavens, to be both her equal and her mate. Together they conceived the twelve Titans, the three Cyclopes, and the three Hecatoncheires — beings of terrifying power with a hundred hands each.
+          </p>
+          <p class="font-body text-lg leading-relaxed" style="color:var(--marble-dim);">
+            Uranus, fearful of his monstrous offspring, cast them into Tartarus. Gaia, wounded and enraged, fashioned a great sickle and implored her children to act. Only Cronus, the youngest Titan, dared answer her call — setting in motion the first great revolution of the cosmos.
+          </p>
+          <div class="mt-8 pt-6" style="border-top:1px solid rgba(212,175,55,0.1);">
+            <p class="font-heading text-xs tracking-widest uppercase" style="color:var(--gold-dim); font-size:0.62rem;">Source: Hesiod · Theogony, c. 700 BCE</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-titanomachy" class="tab-content">
+        <div class="myth-card">
+          <p class="myth-num mb-4">Chronicle II · The War of Ages</p>
+          <h3 class="font-display text-2xl md:text-3xl mb-5" style="color:var(--gold);">The Titanomachy</h3>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            For ten terrible years, the universe was torn asunder by war. The Olympians — children of Cronus, who had swallowed them at birth to prevent a prophecy of his own overthrow — battled the Titans across the heavens and earth.
+          </p>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Zeus, having freed his siblings from Cronus's belly and liberated the Cyclopes from their prison, wielded the thunderbolt for the first time. Poseidon bore the trident, and Hades donned the helm of invisibility. The very mountains shook and seas boiled.
+          </p>
+          <p class="font-body text-lg leading-relaxed" style="color:var(--marble-dim);">
+            When at last the Titans fell, Zeus cast them into the depths of Tartarus, behind bronze walls, where even the light of day could never reach. A new age began — the age of the Olympians — and the cosmos took the shape we know.
+          </p>
+          <div class="mt-8 pt-6" style="border-top:1px solid rgba(212,175,55,0.1);">
+            <p class="font-heading text-xs tracking-widest uppercase" style="color:var(--gold-dim); font-size:0.62rem;">Source: Hesiod · Theogony · Books IV–V</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-odyssey" class="tab-content">
+        <div class="myth-card">
+          <p class="myth-num mb-4">Chronicle III · The Long Journey Home</p>
+          <h3 class="font-display text-2xl md:text-3xl mb-5" style="color:var(--gold);">The Odyssey</h3>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Ten years after the fall of Troy, Odysseus of Ithaca had not yet returned home. Cursed by Poseidon for blinding his son Polyphemus the Cyclops, he wandered the wine-dark sea — encountering monsters, sorcerers, and gods at every turn.
+          </p>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            He passed through the island of Circe, who turned men to swine; descended living into the realm of Hades; sailed between Scylla and Charybdis; and resisted the song of the Sirens, lashed to his mast as his crew rowed with wax-stopped ears.
+          </p>
+          <p class="font-body text-lg leading-relaxed" style="color:var(--marble-dim);">
+            Guided always by Athena's unseen hand, Odysseus finally reached Ithaca's rocky shore, where faithful Penelope waited at her loom, unraveling by night what she wove by day — an act of love that outlasted twenty years of war and wandering.
+          </p>
+          <div class="mt-8 pt-6" style="border-top:1px solid rgba(212,175,55,0.1);">
+            <p class="font-heading text-xs tracking-widest uppercase" style="color:var(--gold-dim); font-size:0.62rem;">Source: Homer · The Odyssey, c. 800 BCE</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-prometheus" class="tab-content">
+        <div class="myth-card">
+          <p class="myth-num mb-4">Chronicle IV · The Theft of Fire</p>
+          <h3 class="font-display text-2xl md:text-3xl mb-5" style="color:var(--gold);">The Bound Titan</h3>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Prometheus, the Forethought, was among the wisest of the Titans and a friend to humankind. When Zeus withheld fire from mortals — condemning them to cold, darkness, and ignorance — Prometheus climbed to the forge of Hephaestus and stole a burning ember, concealed in a hollow fennel stalk.
+          </p>
+          <p class="font-body text-lg leading-relaxed mb-5" style="color:var(--marble-dim);">
+            Civilization was born in that stolen flame. Humans learned to cook, to forge metal, to build and worship. But Zeus's fury was boundless. He ordered Prometheus chained to a crag in the Caucasus Mountains, where each day an eagle would devour his immortal liver — and each night it would grow back.
+          </p>
+          <p class="font-body text-lg leading-relaxed" style="color:var(--marble-dim);">
+            For thirty thousand years he endured, until Heracles at last shattered his chains. Prometheus, unbowed, had kept his secret: he knew the fate of Zeus, should the king of gods pursue a certain sea-nymph. He chose suffering over surrender — the first martyr of the human cause.
+          </p>
+          <div class="mt-8 pt-6" style="border-top:1px solid rgba(212,175,55,0.1);">
+            <p class="font-heading text-xs tracking-widest uppercase" style="color:var(--gold-dim); font-size:0.62rem;">Source: Aeschylus · Prometheus Bound, c. 460 BCE</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     QUOTE / INTERLUDE
+════════════════════════════════════════ -->
+<section class="py-20 px-6 relative overflow-hidden">
+  <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 50%, rgba(212,175,55,0.02) 100%);"></div>
+  <div class="absolute left-0 top-0 bottom-0 w-px" style="background:linear-gradient(to bottom, transparent, rgba(212,175,55,0.3), transparent);"></div>
+  <div class="absolute right-0 top-0 bottom-0 w-px" style="background:linear-gradient(to bottom, transparent, rgba(212,175,55,0.3), transparent);"></div>
+
+  <div class="max-w-3xl mx-auto text-center reveal">
+    <p class="font-body text-3xl md:text-4xl leading-relaxed mb-6" style="color:var(--marble); font-style:italic; text-shadow:0 2px 20px rgba(0,0,0,0.5);">
+      "Even the gods themselves cannot undo what has been done,<br/>
+      <span style="color:var(--gold);">nor alter the word once spoken."</span>
+    </p>
+    <div class="gold-divider mb-4"></div>
+    <p class="font-heading text-xs tracking-widest uppercase" style="color:var(--gold-dim); letter-spacing:0.3em;">— Agathon, Fragments</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer id="footer" class="py-16 px-6 relative overflow-hidden">
+  <!-- Decorative top border -->
+  <div class="absolute top-0 left-0 right-0 h-px" style="background:linear-gradient(90deg, transparent, var(--gold-dim), transparent);"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+      <!-- Brand -->
+      <div>
+        <p class="font-display text-sm mb-3" style="color:var(--gold);">Olympus</p>
+        <p class="font-body text-sm leading-relaxed" style="color:var(--marble-dim); font-style:italic;">
+          A digital shrine to the eternal myths — where gods walk and heroes rise. Built in reverence to the ancient poets.
+        </p>
+      </div>
+
+      <!-- The Underworld (site map) -->
+      <div>
+        <p class="font-heading text-xs tracking-widest uppercase mb-5" style="color:var(--gold-dim); letter-spacing:0.3em;">The Underworld</p>
+        <ul class="space-y-3">
+          <li><a href="#hero" class="footer-link">Home · The Portal</a></li>
+          <li><a href="#pantheon" class="footer-link">The Pantheon · The Gods</a></li>
+          <li><a href="#myths" class="footer-link">Sacred Myths · The Chronicles</a></li>
+          <li><a href="#" class="footer-link">The Oracle · Prophecies</a></li>
+          <li><a href="#" class="footer-link">Heroic Labors · The Heroes</a></li>
+        </ul>
+      </div>
+
+      <!-- The Heavens -->
+      <div>
+        <p class="font-heading text-xs tracking-widest uppercase mb-5" style="color:var(--gold-dim); letter-spacing:0.3em;">The Heavens</p>
+        <ul class="space-y-3">
+          <li>
+            <a href="#hero" class="footer-link flex items-center gap-2">
+              <i data-lucide="arrow-up" style="width:12px;height:12px;"></i>
+              Return to Olympus
+            </a>
+          </li>
+          <li><a href="#" class="footer-link">Verse · Iliad & Odyssey</a></li>
+          <li><a href="#" class="footer-link">Dramaturgy · The Tragedians</a></li>
+          <li><a href="#" class="footer-link">Cosmogony · Origins</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top:1px solid rgba(212,175,55,0.1);">
+      <p class="font-heading text-xs tracking-widest" style="color:rgba(184,176,160,0.4); font-size:0.6rem; letter-spacing:0.2em;">
+        © MMXXV · THE AGE OF GODS · ALL MYTHS RESERVED
+      </p>
+      <div class="flex items-center gap-2" style="color:rgba(184,176,160,0.3);">
+        <span class="font-body text-xs italic" style="font-size:0.7rem;">Crafted in honour of the Muses</span>
+        <span style="color:var(--gold-dim);">✦</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+  // ── INIT LUCIDE ICONS ──
+  lucide.createIcons();
+
+  // ── NAVBAR SCROLL ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── MOBILE MENU ──
+  function toggleMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
+
+  // ── TAB SYSTEM ──
+  function switchTab(id, btn) {
+    // Deactivate all
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    // Activate selected
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── STAR FIELD ──
+  const starContainer = document.getElementById('stars');
+  const starCount = 80;
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --dur: ${2 + Math.random() * 4}s;
+      --op: ${0.2 + Math.random() * 0.6};
+      width: ${1 + Math.random() * 2}px;
+      height: ${1 + Math.random() * 2}px;
+      animation-delay: ${Math.random() * 4}s;
+    `;
+    starContainer.appendChild(star);
+  }
+
+  // ── SCROLL REVEAL ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
